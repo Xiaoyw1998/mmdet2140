@@ -17,10 +17,6 @@ from mmdet.datasets import build_dataset
 from mmdet.models import build_detector
 from mmdet.utils import collect_env, get_root_logger
 from prepare_data import create_data_ann
-print('*' * 40)
-if not os.path.exists('data/train.txt'):
-    create_data_ann('/media/HD2T/cpmpetition/fanguangyi/data')
-print('*' * 40)
 
 
 def parse_args():
@@ -90,8 +86,15 @@ def parse_args():
 
 def main():
     args = parse_args()
-
     cfg = Config.fromfile(args.config)
+
+    print('*' * 40)
+    current_path = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    train_pkl = os.path.join(current_path, 'data/train.pkl')
+    if not os.path.exists(train_pkl):
+        create_data_ann(cfg.data_root)
+    print('*' * 40)
+
     if args.cfg_options is not None:
         cfg.merge_from_dict(args.cfg_options)
     # import modules from string list.

@@ -8,13 +8,24 @@ import pickle
 
 
 def create_data_ann(data_root):
+    current_path = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    train_txt = os.path.join(current_path, 'data/train.txt')
+    val_txt = os.path.join(current_path, 'data/val.txt')
+    train_pkl = os.path.join(current_path, 'data/train.pkl')
+    val_pkl = os.path.join(current_path, 'data/val.pkl')
+    train_json = os.path.join(current_path, 'data/train.json')
+    val_json = os.path.join(current_path, 'data/val.json')
+    print(val_json, val_pkl, val_txt)
+    print(train_json, train_txt, train_pkl)
+    if not os.path.exists(os.path.join(current_path, 'data')):
+        os.makedirs(os.path.join(current_path, 'data'))
     print('prepare data...')
     files = os.listdir(data_root)
     # jpg_files = [f for f in files if f.endswith('jpg')]
     xml_files = [os.path.join(data_root, f) for f in files if f.endswith('xml')]
 
     num_total = len(xml_files)
-    num_val = 5
+    num_val = int(num_total*0.05)
     val_index = np.random.choice(num_total, num_val, replace=False).tolist()
     train_index = []
     for i in range(num_total):
@@ -26,20 +37,19 @@ def create_data_ann(data_root):
     train_xmls = [xml_files[i] for i in train_index]
     val_data_info, val_files = xml2ann(val_xmls)
     train_data_info, train_files = xml2ann(train_xmls)
-    if not os.path.exists('data'):
-        os.makedirs('data')
-    with open("data/val.pkl", "wb") as f:
+
+    with open(val_pkl, "wb") as f:
         pickle.dump(val_data_info, f)
-    with open("data/train.pkl", "wb") as f:
+    with open(train_pkl, "wb") as f:
         pickle.dump(train_data_info, f)
-    # with open("data/val.json", "w") as f:
+    # with open(val_json, "w") as f:
     #     json.dump(val_data_info, f)
-    # with open("data/train.json", "w") as f:
+    # with open(train_json, "w") as f:
     #     json.dump(train_data_info, f)
-    with open("data/val.txt", "w") as f:
+    with open(val_txt, "w") as f:
         for file in val_files:
             f.writelines(file+'\n')
-    with open("data/train.txt", "w") as f:
+    with open(train_txt, "w") as f:
         for file in train_files:
             f.writelines(file+'\n')
 
@@ -84,10 +94,13 @@ def xml2ann(xmls):
     return data_infos, filenames
 
 
-def test():
-    with open("data/val.pkl", "rb") as f:
+def aaatest():
+    current_path = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    train_pkl = os.path.join(current_path, 'data/train.pkl')
+    val_pkl = os.path.join(current_path, 'data/val.pkl')
+    with open(val_pkl, "rb") as f:
         val = pickle.load(f)
-    with open("data/train.pkl", "rb") as f:
+    with open(train_pkl, "rb") as f:
         train = pickle.load(f)
     print(val)
     print(train)
